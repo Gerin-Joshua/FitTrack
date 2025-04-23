@@ -9,77 +9,91 @@
     <style>
         /* Container for Sections */
         .dashboard-container {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
             padding: 20px;
-            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        /* Profile Card */
-        .profile-card {
+        /* Base Card Styling */
+        .card {
             background: #2a2a2a;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 300px;
-            text-align: center;
-            animation: fadeIn 0.8s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .profile-card h3 {
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .card h3 {
             color: #00d4ff;
-            margin-bottom: 20px;
+            font-size: 20px;
+            margin-bottom: 15px;
+            text-align: center;
         }
 
-        .profile-stat {
-            margin: 15px 0;
-            position: relative;
+        /* Clickable Card for Hidden Content */
+        .clickable-card {
+            cursor: pointer;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 150px;
         }
 
-        .profile-stat .label {
+        .clickable-card:hover {
+            background: #333333;
+        }
+
+        /* Hidden Content Styling */
+        .hidden-content {
+            display: none;
+            padding: 15px;
+            background: #333333;
+            border-radius: 10px;
+            margin-top: 10px;
+            animation: slideDown 0.5s ease forwards;
+        }
+
+        .hidden-content.show {
+            display: block;
+        }
+
+        /* Profile Hidden Content */
+        .profile-details .stat {
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .profile-details .label {
             font-size: 14px;
             color: #b0b0b0;
             margin-bottom: 5px;
         }
 
-        .profile-stat .value {
-            font-size: 24px;
+        .profile-details .value {
+            font-size: 18px;
             font-weight: 600;
             color: #e0e0e0;
         }
 
-        .profile-stat .circle {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80px;
-            height: 80px;
+        .profile-details .circle {
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            background: conic-gradient(#00d4ff 0% {{ stat.percentage }}%, #3a3a3a {{ stat.percentage }}% 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: conic-gradient(#00d4ff 0% calc(var(--percentage) * 1%), #3a3a3a calc(var(--percentage) * 1%) 100%);
+            margin: 10px auto;
         }
 
         /* Goal and Diet Card */
-        .goal-diet-card {
-            background: #2a2a2a;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 400px;
-            animation: fadeIn 0.8s ease;
-        }
-
-        .goal-diet-card h3 {
-            color: #00d4ff;
-            margin-bottom: 15px;
-        }
-
         .goal-diet-card ul {
             list-style: none;
             padding: 0;
@@ -112,65 +126,77 @@
         }
 
         /* Trainer Card */
-        .trainer-card {
-            background: #2a2a2a;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 300px;
-            text-align: center;
-            animation: fadeIn 0.8s ease;
-        }
-
-        .trainer-card h3 {
-            color: #00d4ff;
-            margin-bottom: 15px;
-        }
-
         .trainer-card p {
             font-size: 14px;
             color: #e0e0e0;
             margin: 5px 0;
+            text-align: center;
         }
 
-        /* Badge Card */
-        .badge-section {
-            width: 100%;
-            max-width: 600px;
-        }
-
+        /* Badge Hidden Content */
         .badge-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
+            justify-content: center;
         }
 
-        .badge-card {
+        .badge-item {
             background: #2a2a2a;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 150px;
+            padding: 10px;
+            border-radius: 8px;
+            width: 120px;
             text-align: center;
-            animation: fadeIn 0.8s ease;
         }
 
-        .badge-card h4 {
+        .badge-item .badge-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .badge-item h4 {
             color: #00d4ff;
-            font-size: 16px;
-            margin-bottom: 10px;
+            font-size: 14px;
+            margin: 5px 0;
         }
 
-        .badge-card p {
+        .badge-item p {
             font-size: 12px;
             color: #b0b0b0;
         }
 
-        .badge-icon {
-            font-size: 30px;
-            margin-bottom: 10px;
+        /* Friends Hidden Content */
+        .friend-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .friend-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #3a3a3a;
+            font-size: 14px;
+            color: #e0e0e0;
+        }
+
+        .friend-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* Activity Hidden Content */
+        .activity-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .activity-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #3a3a3a;
+            font-size: 14px;
+            color: #e0e0e0;
+        }
+
+        .activity-list li:last-child {
+            border-bottom: none;
         }
 
         /* Empty State */
@@ -178,16 +204,29 @@
             color: #b0b0b0;
             font-style: italic;
             text-align: center;
-            margin: 20px 0;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @media (max-width: 768px) {
-            .profile-card, .goal-diet-card, .trainer-card, .badge-section {
-                max-width: 100%;
+            .dashboard-container {
+                grid-template-columns: 1fr;
             }
 
-            .badge-card {
-                max-width: 120px;
+            .card {
+                width: 100%;
             }
         }
     </style>
@@ -210,31 +249,36 @@
     </nav>
     <div class="dashboard-container">
         <!-- Profile Section -->
-        <div class="profile-card">
+        <div class="card clickable-card" onclick="toggleContent('profile-content')">
             <h3>Your Profile</h3>
-            {% if profile %}
-                <div class="profile-stat">
-                    <div class="label">Height</div>
-                    <div class="value">{{ profile.Height }} cm</div>
-                    <div class="circle" style="--percentage: {{ (profile.Height / 200) * 100 }};"></div>
+            <p>Click to view details</p>
+            <div id="profile-content" class="hidden-content">
+                <div class="profile-details">
+                    {% if profile %}
+                        <div class="stat">
+                            <div class="label">Height</div>
+                            <div class="value">{{ profile.Height }} cm</div>
+                            <div class="circle" style="--percentage: {{ (profile.Height / 200) * 100 }};"></div>
+                        </div>
+                        <div class="stat">
+                            <div class="label">Weight</div>
+                            <div class="value">{{ profile.Weight }} kg</div>
+                            <div class="circle" style="--percentage: {{ (profile.Weight / 150) * 100 }};"></div>
+                        </div>
+                        <div class="stat">
+                            <div class="label">Age</div>
+                            <div class="value">{{ profile.Age }} years</div>
+                            <div class="circle" style="--percentage: {{ (profile.Age / 100) * 100 }};"></div>
+                        </div>
+                    {% else %}
+                        <p class="empty-state">No profile data available.</p>
+                    {% endif %}
                 </div>
-                <div class="profile-stat">
-                    <div class="label">Weight</div>
-                    <div class="value">{{ profile.Weight }} kg</div>
-                    <div class="circle" style="--percentage: {{ (profile.Weight / 150) * 100 }};"></div>
-                </div>
-                <div class="profile-stat">
-                    <div class="label">Age</div>
-                    <div class="value">{{ profile.Age }} years</div>
-                    <div class="circle" style="--percentage: {{ (profile.Age / 100) * 100 }};"></div>
-                </div>
-            {% else %}
-                <p class="empty-state">No profile data available.</p>
-            {% endif %}
+            </div>
         </div>
 
         <!-- Goal and Diet Section -->
-        <div class="goal-diet-card">
+        <div class="card goal-diet-card">
             <h3>Goals & Diet</h3>
             <ul>
                 {% if goals %}
@@ -262,7 +306,7 @@
         </div>
 
         <!-- Trainer Section -->
-        <div class="trainer-card">
+        <div class="card trainer-card">
             <h3>Your Trainer</h3>
             {% if trainer %}
                 <p><strong>Name:</strong> {{ trainer.Name }}</p>
@@ -273,22 +317,66 @@
         </div>
 
         <!-- Badge Section -->
-        <div class="badge-section">
+        <div class="card clickable-card" onclick="toggleContent('badge-content')">
             <h3>Your Badges</h3>
-            {% if badges %}
-                <div class="badge-grid">
-                    {% for badge in badges %}
-                        <div class="badge-card">
-                            <div class="badge-icon">🏆</div>
-                            <h4>{{ badge.Badge_Type }}</h4>
-                            <p>{{ badge.Badge_Desc }}</p>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p class="empty-state">No badges earned yet.</p>
-            {% endif %}
+            <p>Click to view badges</p>
+            <div id="badge-content" class="hidden-content">
+                {% if badges %}
+                    <div class="badge-grid">
+                        {% for badge in badges %}
+                            <div class="badge-item">
+                                <div class="badge-icon">🏆</div>
+                                <h4>{{ badge.Badge_Type }}</h4>
+                                <p>{{ badge.Badge_Desc }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="empty-state">No badges earned yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Friends Section -->
+        <div class="card clickable-card" onclick="toggleContent('friend-content')">
+            <h3>Your Friends</h3>
+            <p>Click to view friends</p>
+            <div id="friend-content" class="hidden-content">
+                {% if friends %}
+                    <ul class="friend-list">
+                        {% for friend in friends %}
+                            <li>Friend ID: {{ friend.Friend_ID }}<br>Streak: {{ friend.Friendship_Streak }} days</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="empty-state">No friends added yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Activity Section -->
+        <div class="card clickable-card" onclick="toggleContent('activity-content')">
+            <h3>Your Activities</h3>
+            <p>Click to view activities</p>
+            <div id="activity-content" class="hidden-content">
+                {% if activities %}
+                    <ul class="activity-list">
+                        {% for activity in activities %}
+                            <li>Type: {{ activity.Activity_type }}<br>Calories Burned: {{ activity.Calories_Burned }} kcal<br>Duration: {{ activity.Duration }} min</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="empty-state">No activities logged yet.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
+
+    <script>
+        function toggleContent(contentId) {
+            const content = document.getElementById(contentId);
+            content.classList.toggle('show');
+        }
+    </script>
 </body>
 </html>

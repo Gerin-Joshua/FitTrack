@@ -198,6 +198,8 @@ def dashboard():
     diets = []
     trainer = {}
     badges = []
+    friends = []
+    activities = []
 
     try:
         connection = mysql.connector.connect(**db_config)
@@ -223,6 +225,14 @@ def dashboard():
         cursor.execute('SELECT Badge_Type, Badge_Desc FROM BADGE WHERE User_ID = %s', (user_id,))
         badges = cursor.fetchall()
 
+        # Fetch friends
+        cursor.execute('SELECT Friend_ID, Friendship_Streak FROM FRIEND WHERE User_ID = %s', (user_id,))
+        friends = cursor.fetchall()
+
+        # Fetch activities
+        cursor.execute('SELECT Activity_type, Calories_Burned, Duration FROM ACTIVITY WHERE User_ID = %s', (user_id,))
+        activities = cursor.fetchall()
+
     except Error as e:
         print(f"Error fetching dashboard data: {e}")
     finally:
@@ -230,7 +240,7 @@ def dashboard():
             cursor.close()
             connection.close()
 
-    return render_template('dashboard.html', profile=profile, goals=goals, diets=diets, trainer=trainer, badges=badges)
+    return render_template('dashboard.html', profile=profile, goals=goals, diets=diets, trainer=trainer, badges=badges, friends=friends, activities=activities)
 
 # Activity route
 @app.route('/activity', methods=['GET', 'POST'])
