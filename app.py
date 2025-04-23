@@ -137,8 +137,13 @@ def init_db():
         cursor.execute('INSERT IGNORE INTO LOGIN_CREDENTIALS (User_ID, Password) VALUES (%s, %s)', ('user', 'user'))
         cursor.execute('INSERT IGNORE INTO LOGIN_CREDENTIALS (User_ID, Password) VALUES (%s, %s)', ('user1', 'user1'))
 
+        # Insert a sample trainer
+        cursor.execute('INSERT IGNORE INTO TRAINER (Trainer_ID, Name, Specialization) VALUES (%s, %s, %s)', 
+                       ('trainer1', 'John Doe', 'Strength Training'))
+
         connection.commit()
         print("Test users 'user' and 'user1' added to USER and LOGIN_CREDENTIALS tables.")
+        print("Sample trainer 'trainer1' added to TRAINER table.")
     except Error as e:
         print(f"Error initializing database: {e}")
     finally:
@@ -186,7 +191,46 @@ def login():
 def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('dashboard.html')
+
+    user_id = session['user_id']
+    profile = {}
+    goals = []
+    diets = []
+    trainer = {}
+    badges = []
+
+    try:
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor(dictionary=True)
+
+        # Fetch user profile
+        cursor.execute('SELECT Name, Age, Height, Weight, Gender, Phone_Number FROM USER WHERE User_ID = %s', (user_id,))
+        profile = cursor.fetchone() or {}
+
+        # Fetch goals
+        cursor.execute('SELECT Goal_type, Exer_Hours, Target_Weight FROM GOAL WHERE User_ID = %s', (user_id,))
+        goals = cursor.fetchall()
+
+        # Fetch diet details
+        cursor.execute('SELECT Calories FROM DIET WHERE User_ID = %s', (user_id,))
+        diets = cursor.fetchall()
+
+        # Fetch trainer (for demo, assume user is assigned to trainer1)
+        cursor.execute('SELECT Name, Specialization FROM TRAINER WHERE Trainer_ID = %s', ('trainer1',))
+        trainer = cursor.fetchone() or {}
+
+        # Fetch badges
+        cursor.execute('SELECT Badge_Type, Badge_Desc FROM BADGE WHERE User_ID = %s', (user_id,))
+        badges = cursor.fetchall()
+
+    except Error as e:
+        print(f"Error fetching dashboard data: {e}")
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
+
+    return render_template('dashboard.html', profile=profile, goals=goals, diets=diets, trainer=trainer, badges=badges)
 
 # Activity route
 @app.route('/activity', methods=['GET', 'POST'])
@@ -260,7 +304,7 @@ def goal():
                 connection.close()
     return render_template('goal.html')
 
-# Similar routes for other pages
+# Diet route
 @app.route('/diet', methods=['GET', 'POST'])
 def diet():
     if 'user_id' not in session:
@@ -284,6 +328,7 @@ def diet():
                 connection.close()
     return render_template('diet.html')
 
+# Friend route
 @app.route('/friend', methods=['GET', 'POST'])
 def friend():
     if 'user_id' not in session:
@@ -309,6 +354,7 @@ def friend():
                 connection.close()
     return render_template('friend.html')
 
+# Trainer route
 @app.route('/trainer', methods=['GET', 'POST'])
 def trainer():
     if 'user_id' not in session:
@@ -334,6 +380,7 @@ def trainer():
                 connection.close()
     return render_template('trainer.html')
 
+# Workout route
 @app.route('/workout', methods=['GET', 'POST'])
 def workout():
     if 'user_id' not in session:
@@ -357,6 +404,7 @@ def workout():
                 connection.close()
     return render_template('workout.html')
 
+# Exercise route
 @app.route('/exercise', methods=['GET', 'POST'])
 def exercise():
     if 'user_id' not in session:
@@ -380,6 +428,7 @@ def exercise():
                 connection.close()
     return render_template('exercise.html')
 
+# Badge route
 @app.route('/badge', methods=['GET', 'POST'])
 def badge():
     if 'user_id' not in session:
@@ -404,6 +453,53 @@ def badge():
                 cursor.close()
                 connection.close()
     return render_template('badge.html')
+
+# Database route
+@app.route('/database')
+def database():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('database.html')
+
+# API to fetch table data
+@app.route('/api/get_table_data', methods=['GET'])
+def get_table_data():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    table_name = request.args.get('table')
+    if not table_name:
+        return jsonify({'error': 'Table name required'}), 400
+
+    # List of allowed tables to prevent SQL injection
+    allowed_tables = [
+        'USER', 'LOGIN_CREDENTIALS', 'ACTIVITY', 'GOAL', 'DIET', 
+        'FRIEND', 'TRAINER', 'WORKOUT_PLAN', 'EXERCISE', 'BADGE'
+    ]
+
+    if table_name.upper() not in allowed_tables:
+        return jsonify({'error': 'Invalid table name'}), 400
+
+    try:
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor(dictionary=True)
+
+        # Fetch column names
+        cursor.execute(f"SHOW COLUMNS FROM {table_name}")
+        columns = [column['Field'] for column in cursor.fetchall()]
+
+        # Fetch data
+        cursor.execute(f"SELECT * FROM {table_name}")
+        data = cursor.fetchall()
+
+        return jsonify({'columns': columns, 'data': data}), 200
+    except Error as e:
+        print(f"Error fetching table data: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
 
 if __name__ == '__main__':
     init_db()

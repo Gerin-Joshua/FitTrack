@@ -3,10 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Badge - Fitness Tracker</title>
+    <title>Badge - Fitness Tracking System</title>
     <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <header>
+        <h1>Fitness Tracking System</h1>
+        <a href="/login" class="logout">Logout</a>
+    </header>
     <nav>
         <a href="/dashboard">Dashboard</a>
         <a href="/activity">Activity</a>
@@ -17,15 +22,15 @@
         <a href="/workout">Workout</a>
         <a href="/exercise">Exercise</a>
     </nav>
-    <div class="container">
-        <h1>Add a Badge</h1>
+    <div class="card">
+        <h2>Add a Badge</h2>
         <div class="form-group">
             <label for="badge_type">Badge Type</label>
             <input type="text" id="badge_type" placeholder="Enter badge type" required>
         </div>
         <div class="form-group">
             <label for="badge_desc">Badge Description</label>
-            <input type="text" id="badge_desc" placeholder="Enter description" required>
+            <input type="text" id="badge_desc" placeholder="Enter badge description" required>
         </div>
         <button onclick="submitBadge()">Add Badge</button>
         <div class="message" id="message"></div>
