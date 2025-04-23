@@ -7,20 +7,26 @@
     <link rel="stylesheet" href="/static/css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
         /* Container for Sections */
         .dashboard-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 20px;
-            max-width: 1200px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            padding: 30px;
+            max-width: 1300px;
             margin: 0 auto;
         }
 
         /* Base Card Styling */
         .card {
             background: #2a2a2a;
-            padding: 20px;
+            padding: 25px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -33,12 +39,13 @@
 
         .card h3 {
             color: #00d4ff;
-            font-size: 20px;
+            font-size: 24px;
             margin-bottom: 15px;
             text-align: center;
+            font-weight: 600;
         }
 
-        /* Clickable Card for Hidden Content */
+        /* Clickable Card */
         .clickable-card {
             cursor: pointer;
             text-align: center;
@@ -46,48 +53,86 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 150px;
+            height: 180px;
+            transition: background 0.3s ease;
         }
 
         .clickable-card:hover {
             background: #333333;
         }
 
-        /* Hidden Content Styling */
-        .hidden-content {
+        .clickable-card p {
+            color: #b0b0b0;
+            font-size: 16px;
+        }
+
+        /* Modal Styling */
+        .modal {
             display: none;
-            padding: 15px;
-            background: #333333;
-            border-radius: 10px;
-            margin-top: 10px;
-            animation: slideDown 0.5s ease forwards;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
         }
 
-        .hidden-content.show {
-            display: block;
+        .modal-content {
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
-        /* Profile Hidden Content */
+        .modal-content h3 {
+            color: #00d4ff;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: #e0e0e0;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #00d4ff;
+        }
+
+        /* Profile Modal Content */
         .profile-details .stat {
-            margin: 10px 0;
+            margin: 15px 0;
             text-align: center;
         }
 
         .profile-details .label {
-            font-size: 14px;
+            font-size: 16px;
             color: #b0b0b0;
             margin-bottom: 5px;
         }
 
         .profile-details .value {
-            font-size: 18px;
+            font-size: 22px;
             font-weight: 600;
             color: #e0e0e0;
         }
 
         .profile-details .circle {
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             background: conic-gradient(#00d4ff 0% calc(var(--percentage) * 1%), #3a3a3a calc(var(--percentage) * 1%) 100%);
             margin: 10px auto;
@@ -100,10 +145,11 @@
         }
 
         .goal-diet-card li {
-            padding: 10px 0;
+            padding: 12px 0;
             border-bottom: 1px solid #3a3a3a;
-            font-size: 14px;
+            font-size: 16px;
             color: #e0e0e0;
+            line-height: 1.5;
         }
 
         .goal-diet-card li:last-child {
@@ -112,10 +158,10 @@
 
         .progress-bar {
             width: 100%;
-            height: 5px;
+            height: 6px;
             background: #3a3a3a;
             border-radius: 5px;
-            margin-top: 5px;
+            margin-top: 8px;
         }
 
         .progress-bar div {
@@ -127,72 +173,75 @@
 
         /* Trainer Card */
         .trainer-card p {
-            font-size: 14px;
+            font-size: 16px;
             color: #e0e0e0;
-            margin: 5px 0;
+            margin: 8px 0;
             text-align: center;
+            line-height: 1.5;
         }
 
-        /* Badge Hidden Content */
+        /* Badge Modal Content */
         .badge-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
             justify-content: center;
         }
 
         .badge-item {
-            background: #2a2a2a;
-            padding: 10px;
-            border-radius: 8px;
-            width: 120px;
+            background: #333333;
+            padding: 15px;
+            border-radius: 10px;
+            width: 130px;
             text-align: center;
         }
 
         .badge-item .badge-icon {
-            font-size: 24px;
-            margin-bottom: 5px;
+            font-size: 28px;
+            margin-bottom: 8px;
         }
 
         .badge-item h4 {
             color: #00d4ff;
-            font-size: 14px;
+            font-size: 16px;
             margin: 5px 0;
         }
 
         .badge-item p {
-            font-size: 12px;
+            font-size: 14px;
             color: #b0b0b0;
         }
 
-        /* Friends Hidden Content */
+        /* Friends Modal Content */
         .friend-list {
             list-style: none;
             padding: 0;
         }
 
         .friend-list li {
-            padding: 8px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #3a3a3a;
-            font-size: 14px;
+            font-size: 16px;
             color: #e0e0e0;
+            line-height: 1.5;
         }
 
         .friend-list li:last-child {
             border-bottom: none;
         }
 
-        /* Activity Hidden Content */
+        /* Activity Modal Content */
         .activity-list {
             list-style: none;
             padding: 0;
         }
 
         .activity-list li {
-            padding: 8px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #3a3a3a;
-            font-size: 14px;
+            font-size: 16px;
             color: #e0e0e0;
+            line-height: 1.5;
         }
 
         .activity-list li:last-child {
@@ -204,29 +253,35 @@
             color: #b0b0b0;
             font-style: italic;
             text-align: center;
-            font-size: 14px;
-            margin: 10px 0;
+            font-size: 16px;
+            margin: 15px 0;
         }
 
         /* Animations */
-        @keyframes slideDown {
+        @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(-10px);
+                transform: scale(0.95);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: scale(1);
             }
         }
 
         @media (max-width: 768px) {
             .dashboard-container {
                 grid-template-columns: 1fr;
+                padding: 20px;
             }
 
             .card {
-                width: 100%;
+                padding: 20px;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
             }
         }
     </style>
@@ -245,14 +300,17 @@
         <a href="/workout">Workout</a>
         <a href="/exercise">Exercise</a>
         <a href="/badge">Badge</a>
-        <a href="/database">Database</a>
     </nav>
     <div class="dashboard-container">
         <!-- Profile Section -->
-        <div class="card clickable-card" onclick="toggleContent('profile-content')">
+        <div class="card clickable-card" onclick="openModal('profile-modal')">
             <h3>Your Profile</h3>
             <p>Click to view details</p>
-            <div id="profile-content" class="hidden-content">
+        </div>
+        <div id="profile-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal('profile-modal')">&times;</span>
+                <h3>Your Profile</h3>
                 <div class="profile-details">
                     {% if profile %}
                         <div class="stat">
@@ -317,10 +375,14 @@
         </div>
 
         <!-- Badge Section -->
-        <div class="card clickable-card" onclick="toggleContent('badge-content')">
+        <div class="card clickable-card" onclick="openModal('badge-modal')">
             <h3>Your Badges</h3>
             <p>Click to view badges</p>
-            <div id="badge-content" class="hidden-content">
+        </div>
+        <div id="badge-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal('badge-modal')">&times;</span>
+                <h3>Your Badges</h3>
                 {% if badges %}
                     <div class="badge-grid">
                         {% for badge in badges %}
@@ -338,10 +400,14 @@
         </div>
 
         <!-- Friends Section -->
-        <div class="card clickable-card" onclick="toggleContent('friend-content')">
+        <div class="card clickable-card" onclick="openModal('friend-modal')">
             <h3>Your Friends</h3>
             <p>Click to view friends</p>
-            <div id="friend-content" class="hidden-content">
+        </div>
+        <div id="friend-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal('friend-modal')">&times;</span>
+                <h3>Your Friends</h3>
                 {% if friends %}
                     <ul class="friend-list">
                         {% for friend in friends %}
@@ -355,10 +421,14 @@
         </div>
 
         <!-- Activity Section -->
-        <div class="card clickable-card" onclick="toggleContent('activity-content')">
+        <div class="card clickable-card" onclick="openModal('activity-modal')">
             <h3>Your Activities</h3>
             <p>Click to view activities</p>
-            <div id="activity-content" class="hidden-content">
+        </div>
+        <div id="activity-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal('activity-modal')">&times;</span>
+                <h3>Your Activities</h3>
                 {% if activities %}
                     <ul class="activity-list">
                         {% for activity in activities %}
@@ -373,9 +443,22 @@
     </div>
 
     <script>
-        function toggleContent(contentId) {
-            const content = document.getElementById(contentId);
-            content.classList.toggle('show');
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = document.getElementsByClassName('modal');
+            for (let modal of modals) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            }
         }
     </script>
 </body>
