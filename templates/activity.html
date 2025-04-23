@@ -3,10 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity - Fitness Tracker</title>
+    <title>Activity - Fitness Tracking System</title>
     <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <header>
+        <h1>Fitness Tracking System</h1>
+        <a href="/login" class="logout">Logout</a>
+    </header>
     <nav>
         <a href="/dashboard">Dashboard</a>
         <a href="/goal">Goal</a>
@@ -17,8 +22,8 @@
         <a href="/exercise">Exercise</a>
         <a href="/badge">Badge</a>
     </nav>
-    <div class="container">
-        <h1>Log Your Activity</h1>
+    <div class="card">
+        <h2>Log Your Activity</h2>
         <div class="form-group">
             <label for="activity_type">Activity Type</label>
             <select id="activity_type" required>
