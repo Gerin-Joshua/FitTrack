@@ -3,10 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diet - Fitness Tracker</title>
+    <title>Diet - Fitness Tracking System</title>
     <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <header>
+        <h1>Fitness Tracking System</h1>
+        <a href="/login" class="logout">Logout</a>
+    </header>
     <nav>
         <a href="/dashboard">Dashboard</a>
         <a href="/activity">Activity</a>
@@ -17,11 +22,11 @@
         <a href="/exercise">Exercise</a>
         <a href="/badge">Badge</a>
     </nav>
-    <div class="container">
-        <h1>Log Your Diet</h1>
+    <div class="card">
+        <h2>Log Your Diet</h2>
         <div class="form-group">
-            <label for="calories">Calories</label>
-            <input type="number" id="calories" placeholder="Enter calories" required>
+            <label for="calories">Calories Consumed</label>
+            <input type="number" id="calories" placeholder="Enter calories consumed" required>
         </div>
         <button onclick="submitDiet()">Log Diet</button>
         <div class="message" id="message"></div>
