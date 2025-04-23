@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity - Fitness Tracker</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/goal">Goal</a>
+        <a href="/diet">Diet</a>
+        <a href="/friend">Friend</a>
+        <a href="/trainer">Trainer</a>
+        <a href="/workout">Workout</a>
+        <a href="/exercise">Exercise</a>
+        <a href="/badge">Badge</a>
+    </nav>
+    <div class="container">
+        <h1>Log Your Activity</h1>
+        <div class="form-group">
+            <label for="activity_type">Activity Type</label>
+            <select id="activity_type" required>
+                <option value="" disabled selected>Select activity</option>
+                <option value="Running">Running</option>
+                <option value="Cycling">Cycling</option>
+                <option value="Swimming">Swimming</option>
+                <option value="Weightlifting">Weightlifting</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="calories_burned">Calories Burned</label>
+            <input type="number" id="calories_burned" placeholder="Enter calories burned" required>
+        </div>
+        <div class="form-group">
+            <label for="duration">Duration (minutes)</label>
+            <input type="number" id="duration" placeholder="Enter duration in minutes" required>
+        </div>
+        <button onclick="submitActivity()">Submit Activity</button>
+        <div class="message" id="message"></div>
+    </div>
+
+    <script src="/static/js/activity.js"></script>
+</body>
+</html>
