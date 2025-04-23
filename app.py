@@ -10,9 +10,9 @@ CORS(app)
 # MySQL database configuration
 db_config = {
     'host': 'localhost',
-    'user': 'your_username',
-    'password': 'your_password',
-    'database': 'fitness_tracker'
+    'user': 'root',
+    'password': 'root',
+    'database': 'fitness'
 }
 
 # Initialize database and create tables
@@ -46,8 +46,8 @@ def init_db():
             CREATE TABLE IF NOT EXISTS ACTIVITY (
                 Activity_ID INT AUTO_INCREMENT PRIMARY KEY,
                 User_ID VARCHAR(50),
-                Act_type VARCHAR(50),
-                Calories_burned INT,
+                Activity_type VARCHAR(50),
+                Calories_Burned INT,
                 Duration INT,
                 FOREIGN KEY (User_ID) REFERENCES USER(User_ID)
             )
@@ -126,7 +126,6 @@ def init_db():
             )
         ''')
 
-        # Relationships (e.g., USER PERFORMS ACTIVITY, USER HAS GOAL are already handled via foreign keys)
         connection.commit()
     except Error as e:
         print(f"Error: {e}")
@@ -186,7 +185,7 @@ def activity():
             connection = mysql.connector.connect(**db_config)
             cursor = connection.cursor()
             cursor.execute('''
-                INSERT INTO ACTIVITY (User_ID, Act_type, Calories_burned, Duration)
+                INSERT INTO ACTIVITY (User_ID, Activity_type, Calories_Burned, Duration)
                 VALUES (%s, %s, %s, %s)
             ''', (user_id, activity_type, calories_burned, duration))
             connection.commit()
@@ -199,7 +198,7 @@ def activity():
                 connection.close()
     return render_template('activity.html')
 
-# Goal route (similar structure for other routes)
+# Goal route
 @app.route('/goal', methods=['GET', 'POST'])
 def goal():
     if 'user_id' not in session:
@@ -228,7 +227,7 @@ def goal():
                 connection.close()
     return render_template('goal.html')
 
-# Similar routes for other pages (diet, friend, trainer, workout, exercise, badge)
+# Similar routes for other pages
 @app.route('/diet', methods=['GET', 'POST'])
 def diet():
     if 'user_id' not in session:

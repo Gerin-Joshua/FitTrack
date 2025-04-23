@@ -1,7 +1,7 @@
 async function submitActivity() {
-    const activity_type = document.getElementById('activity_type').value;
-    const calories_burned = document.getElementById('calories_burned').value;
-    const duration = document.getElementById('duration').value;
+    const activity_type = document.getElementById('Activity_Type').value;
+    const calories_burned = document.getElementById('Calories_Burned').value;
+    const duration = document.getElementById('Duration').value;
     const messageDiv = document.getElementById('message');
 
     if (!activity_type || !calories_burned || !duration) {
