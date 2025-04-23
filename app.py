@@ -29,19 +29,20 @@ def init_db():
             )
         ''')
 
-        # USER table
+        # USER table (User_ID as VARCHAR, added Phone_Number)
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS USER (
                 User_ID VARCHAR(50) PRIMARY KEY,
                 Name VARCHAR(100),
+                Age INT,
                 Height FLOAT,
                 Weight FLOAT,
-                Age INT,
-                Gender VARCHAR(20)
+                Gender VARCHAR(20),
+                Phone_Number VARCHAR(15)
             )
         ''')
 
-        # ACTIVITY table
+        # ACTIVITY table (User_ID as VARCHAR)
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS ACTIVITY (
                 Activity_ID INT AUTO_INCREMENT PRIMARY KEY,
@@ -53,7 +54,7 @@ def init_db():
             )
         ''')
 
-        # GOAL table
+        # GOAL table (User_ID as VARCHAR)
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS GOAL (
                 Goal_ID INT AUTO_INCREMENT PRIMARY KEY,
@@ -65,7 +66,7 @@ def init_db():
             )
         ''')
 
-        # DIET table
+        # DIET table (User_ID as VARCHAR)
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS DIET (
                 Diet_ID INT AUTO_INCREMENT PRIMARY KEY,
@@ -75,7 +76,7 @@ def init_db():
             )
         ''')
 
-        # FRIEND table
+        # FRIEND table (User_ID and Friend_ID as VARCHAR)
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS FRIEND (
                 User_ID VARCHAR(50),
@@ -115,7 +116,7 @@ def init_db():
             )
         ''')
 
-        # BADGE table
+        # BADGE table (User_ID as VARCHAR)
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS BADGE (
                 Badge_ID INT AUTO_INCREMENT PRIMARY KEY,
@@ -126,9 +127,20 @@ def init_db():
             )
         ''')
 
+        # Insert test users into USER table
+        cursor.execute('INSERT IGNORE INTO USER (User_ID, Name, Age, Height, Weight, Gender, Phone_Number) VALUES (%s, %s, %s, %s, %s, %s, %s)', 
+                       ('user', 'Test User', 24, 111, 32, 'Male', '9867654132'))
+        cursor.execute('INSERT IGNORE INTO USER (User_ID, Name, Age, Height, Weight, Gender, Phone_Number) VALUES (%s, %s, %s, %s, %s, %s, %s)', 
+                       ('user1', 'Test User1', 25, 165, 60, 'Female', '9876543210'))
+
+        # Insert test users into LOGIN_CREDENTIALS table
+        cursor.execute('INSERT IGNORE INTO LOGIN_CREDENTIALS (User_ID, Password) VALUES (%s, %s)', ('user', 'user'))
+        cursor.execute('INSERT IGNORE INTO LOGIN_CREDENTIALS (User_ID, Password) VALUES (%s, %s)', ('user1', 'user1'))
+
         connection.commit()
+        print("Test users 'user' and 'user1' added to USER and LOGIN_CREDENTIALS tables.")
     except Error as e:
-        print(f"Error: {e}")
+        print(f"Error initializing database: {e}")
     finally:
         if connection.is_connected():
             cursor.close()
@@ -151,10 +163,17 @@ def login():
 
             if result and result[0] == password:
                 session['user_id'] = user_id
+                # Ensure the user exists in the USER table
+                cursor.execute('SELECT User_ID FROM USER WHERE User_ID = %s', (user_id,))
+                if not cursor.fetchone():
+                    cursor.execute('INSERT INTO USER (User_ID) VALUES (%s)', (user_id,))
+                    connection.commit()
+                    print(f"Inserted user {user_id} into USER table")
                 return jsonify({'message': 'Login successful'}), 200
             else:
                 return jsonify({'error': 'Invalid credentials'}), 401
         except Error as e:
+            print(f"Error during login: {e}")
             return jsonify({'error': str(e)}), 500
         finally:
             if connection.is_connected():
@@ -181,16 +200,29 @@ def activity():
         calories_burned = data['calories_burned']
         duration = data['duration']
 
+        print(f"Received activity data: user_id={user_id}, activity_type={activity_type}, calories_burned={calories_burned}, duration={duration}")
+
         try:
             connection = mysql.connector.connect(**db_config)
             cursor = connection.cursor()
+
+            # Verify user exists in USER table
+            cursor.execute('SELECT User_ID FROM USER WHERE User_ID = %s', (user_id,))
+            if not cursor.fetchone():
+                cursor.execute('INSERT INTO USER (User_ID) VALUES (%s)', (user_id,))
+                connection.commit()
+                print(f"Inserted user {user_id} into USER table")
+
+            # Insert into ACTIVITY table
             cursor.execute('''
                 INSERT INTO ACTIVITY (User_ID, Activity_type, Calories_Burned, Duration)
                 VALUES (%s, %s, %s, %s)
             ''', (user_id, activity_type, calories_burned, duration))
             connection.commit()
+            print("Activity inserted successfully")
             return jsonify({'message': 'Activity logged successfully'}), 200
         except Error as e:
+            print(f"Error inserting activity: {e}")
             return jsonify({'error': str(e)}), 500
         finally:
             if connection.is_connected():
@@ -220,6 +252,7 @@ def goal():
             connection.commit()
             return jsonify({'message': 'Goal set successfully'}), 200
         except Error as e:
+            print(f"Error inserting goal: {e}")
             return jsonify({'error': str(e)}), 500
         finally:
             if connection.is_connected():
@@ -243,6 +276,7 @@ def diet():
             connection.commit()
             return jsonify({'message': 'Diet logged successfully'}), 200
         except Error as e:
+            print(f"Error inserting diet: {e}")
             return jsonify({'error': str(e)}), 500
         finally:
             if connection.is_connected():
@@ -267,6 +301,7 @@ def friend():
             connection.commit()
             return jsonify({'message': 'Friend added successfully'}), 200
         except Error as e:
+            print(f"Error inserting friend: {e}")
             return jsonify({'error': str(e)}), 500
         finally:
             if connection.is_connected():
@@ -291,6 +326,7 @@ def trainer():
             connection.commit()
             return jsonify({'message': 'Trainer added successfully'}), 200
         except Error as e:
+            print(f"Error inserting trainer: {e}")
             return jsonify({'error': str(e)}), 500
         finally:
             if connection.is_connected():
@@ -313,6 +349,7 @@ def workout():
             connection.commit()
             return jsonify({'message': 'Workout plan created successfully'}), 200
         except Error as e:
+            print(f"Error inserting workout plan: {e}")
             return jsonify({'error': str(e)}), 500
         finally:
             if connection.is_connected():
@@ -335,6 +372,7 @@ def exercise():
             connection.commit()
             return jsonify({'message': 'Exercise added successfully'}), 200
         except Error as e:
+            print(f"Error inserting exercise: {e}")
             return jsonify({'error': str(e)}), 500
         finally:
             if connection.is_connected():
@@ -359,6 +397,7 @@ def badge():
             connection.commit()
             return jsonify({'message': 'Badge added successfully'}), 200
         except Error as e:
+            print(f"Error inserting badge: {e}")
             return jsonify({'error': str(e)}), 500
         finally:
             if connection.is_connected():
