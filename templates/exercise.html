@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise - Fitness Tracker</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/activity">Activity</a>
+        <a href="/goal">Goal</a>
+        <a href="/diet">Diet</a>
+        <a href="/friend">Friend</a>
+        <a href="/trainer">Trainer</a>
+        <a href="/workout">Workout</a>
+        <a href="/badge">Badge</a>
+    </nav>
+    <div class="container">
+        <h1>Add an Exercise</h1>
+        <div class="form-group">
+            <label for="plan_id">Plan ID</label>
+            <input type="number" id="plan_id" placeholder="Enter plan ID" required>
+        </div>
+        <div class="form-group">
+            <label for="exercise_type">Exercise Type</label>
+            <input type="text" id="exercise_type" placeholder="Enter exercise type" required>
+        </div>
+        <button onclick="submitExercise()">Add Exercise</button>
+        <div class="message" id="message"></div>
+    </div>
+
+    <script src="/static/js/exercise.js"></script>
+</body>
+</html>
