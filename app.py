@@ -11,8 +11,9 @@ CORS(app)
 db_config = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'root',
-    'database': 'fitness'
+    'password': 'josh123@',
+    'database': 'fitx',
+    'port': 3307
 }
 
 # Initialize database and create tables
@@ -185,8 +186,56 @@ def login():
                 cursor.close()
                 connection.close()
     return render_template('login.html')
+# signup route
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        data = request.get_json()
+        user_id = data['user_id']
+        password = data['password']
+        name = data['name']
+        age = data['age']
+        height = data['height']
+        weight = data['weight']
+        gender = data['gender']
+        phone_number = data['phone_number']
+
+        try:
+            connection = mysql.connector.connect(**db_config)
+            cursor = connection.cursor()
+            
+            # Check if user_id already exists
+            cursor.execute('SELECT User_ID FROM USER WHERE User_ID = %s', (user_id,))
+            if cursor.fetchone():
+                return jsonify({'error': 'User ID already exists'}), 400
+            
+            # First, insert into USER table
+            cursor.execute('''
+                INSERT INTO USER (User_ID, Name, Age, Height, Weight, Gender, Phone_Number) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            ''', (user_id, name, age, height, weight, gender, phone_number))
+            
+            # Then, insert into LOGIN_CREDENTIALS table
+            cursor.execute('INSERT INTO LOGIN_CREDENTIALS (User_ID, Password) VALUES (%s, %s)', 
+                          (user_id, password))
+            
+            connection.commit()
+            return jsonify({'message': 'Account created successfully'}), 201
+            
+        except Error as e:
+            print(f"Error during signup: {e}")
+            # If an error occurs, rollback the transaction
+            connection.rollback()
+            return jsonify({'error': str(e)}), 500
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+                
+    return render_template('signup.html')
 
 # Dashboard route
+# Dashboard route with friends' badges
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' not in session:
@@ -200,6 +249,7 @@ def dashboard():
     badges = []
     friends = []
     activities = []
+    friends_badges = {}  # New dictionary to store friends' badges
 
     try:
         connection = mysql.connector.connect(**db_config)
@@ -228,6 +278,22 @@ def dashboard():
         # Fetch friends
         cursor.execute('SELECT Friend_ID, Friendship_Streak FROM FRIEND WHERE User_ID = %s', (user_id,))
         friends = cursor.fetchall()
+        
+        # Fetch friends' badges
+        for friend in friends:
+            friend_id = friend['Friend_ID']
+            # Get friend's name
+            cursor.execute('SELECT Name FROM USER WHERE User_ID = %s', (friend_id,))
+            friend_name = cursor.fetchone()
+            if friend_name:
+                friend['Name'] = friend_name['Name']
+            else:
+                friend['Name'] = "Unknown"
+                
+            # Get friend's badges
+            cursor.execute('SELECT Badge_Type, Badge_Desc FROM BADGE WHERE User_ID = %s', (friend_id,))
+            friend_badges = cursor.fetchall()
+            friends_badges[friend_id] = friend_badges
 
         # Fetch activities
         cursor.execute('SELECT Activity_type, Calories_Burned, Duration FROM ACTIVITY WHERE User_ID = %s', (user_id,))
@@ -240,7 +306,71 @@ def dashboard():
             cursor.close()
             connection.close()
 
-    return render_template('dashboard.html', profile=profile, goals=goals, diets=diets, trainer=trainer, badges=badges, friends=friends, activities=activities)
+    return render_template('dashboard.html', profile=profile, goals=goals, diets=diets, 
+                           trainer=trainer, badges=badges, friends=friends, 
+                           activities=activities, friends_badges=friends_badges)
+# BMI Calculator route
+@app.route('/bmi', methods=['GET', 'POST'])
+def bmi_calculator():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user_id = session['user_id']
+    user_data = {}
+    bmi_result = None
+    bmi_category = None
+    
+    try:
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor(dictionary=True)
+        
+        # Fetch user data (height and weight)
+        cursor.execute('SELECT Height, Weight FROM USER WHERE User_ID = %s', (user_id,))
+        user_data = cursor.fetchone() or {}
+        
+        # If POST request, calculate BMI
+        if request.method == 'POST':
+            data = request.get_json()
+            height = float(data.get('height', 0))  # in cm
+            weight = float(data.get('weight', 0))  # in kg
+            
+            # Calculate BMI
+            if height > 0 and weight > 0:
+                height_in_meters = height / 100
+                bmi_result = round(weight / (height_in_meters * height_in_meters), 2)
+                
+                # Determine BMI category
+                if bmi_result < 18.5:
+                    bmi_category = "Underweight"
+                elif 18.5 <= bmi_result < 25:
+                    bmi_category = "Normal weight"
+                elif 25 <= bmi_result < 30:
+                    bmi_category = "Overweight"
+                else:
+                    bmi_category = "Obesity"
+                
+                # Update user's height and weight in database if they've changed
+                if height != user_data.get('Height', 0) or weight != user_data.get('Weight', 0):
+                    cursor.execute('UPDATE USER SET Height = %s, Weight = %s WHERE User_ID = %s', 
+                                  (height, weight, user_id))
+                    connection.commit()
+                
+                return jsonify({
+                    'bmi': bmi_result,
+                    'category': bmi_category
+                }), 200
+            else:
+                return jsonify({'error': 'Please enter valid height and weight values'}), 400
+                
+    except Error as e:
+        print(f"Error in BMI calculator: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if connection and connection.is_connected():
+            cursor.close()
+            connection.close()
+    
+    return render_template('bmi.html', user_data=user_data)
 
 # Activity route
 @app.route('/activity', methods=['GET', 'POST'])

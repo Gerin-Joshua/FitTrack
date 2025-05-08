@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Calculator - Fitness Tracking System</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .result-container {
+            background: #333333;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .bmi-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+        
+        .bmi-category {
+            font-size: 20px;
+            color: #e0e0e0;
+            font-weight: 600;
+        }
+        
+        .bmi-chart {
+            margin-top: 20px;
+        }
+        
+        .bmi-scale {
+            display: flex;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .scale-underweight {
+            background: #17a2b8;
+            width: 25%;
+        }
+        
+        .scale-normal {
+            background: #28a745;
+            width: 25%;
+        }
+        
+        .scale-overweight {
+            background: #ffc107;
+            width: 25%;
+        }
+        
+        .scale-obese {
+            background: #dc3545;
+            width: 25%;
+        }
+        
+        .bmi-marker {
+            position: relative;
+            height: 20px;
+        }
+        
+        .marker {
+            position: absolute;
+            top: -10px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid #e0e0e0;
+            transform: translateX(-50%);
+        }
+        
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 14px;
+            color: #b0b0b0;
+        }
+        
+        .interpretation {
+            margin-top: 15px;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Fitness Tracking System</h1>
+        <a href="/login" class="logout">Logout</a>
+    </header>
+    <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/activity">Activity</a>
+        <a href="/goal">Goal</a>
+        <a href="/diet">Diet</a>
+        <a href="/bmi" class="active">BMI Calculator</a>
+        <a href="/friend">Friend</a>
+        <a href="/trainer">Trainer</a>
+        <a href="/workout">Workout</a>
+        <a href="/exercise">Exercise</a>
+        <a href="/badge">Badge</a>
+    </nav>
+    <div class="card">
+        <h2>BMI Calculator</h2>
+        <div class="form-group">
+            <label for="height">Height (cm)</label>
+            <input type="number" id="height" placeholder="Enter your height" value="{{ user_data.Height|default('') }}" required>
+        </div>
+        <div class="form-group">
+            <label for="weight">Weight (kg)</label>
+            <input type="number" id="weight" placeholder="Enter your weight" value="{{ user_data.Weight|default('') }}" required>
+        </div>
+        <button onclick="calculateBMI()">Calculate BMI</button>
+        
+        <div class="result-container" id="result-container">
+            <div class="result-header">
+                <div>
+                    <div class="bmi-value" id="bmi-value">--</div>
+                    <div class="bmi-category" id="bmi-category">Category</div>
+                </div>
+            </div>
+            
+            <div class="bmi-chart">
+                <div class="bmi-scale">
+                    <div class="scale-underweight"></div>
+                    <div class="scale-normal"></div>
+                    <div class="scale-overweight"></div>
+                    <div class="scale-obese"></div>
+                </div>
+                <div class="bmi-marker">
+                    <div class="marker" id="bmi-marker"></div>
+                </div>
+                <div class="scale-labels">
+                    <span>Underweight</span>
+                    <span>Normal</span>
+                    <span>Overweight</span>
+                    <span>Obese</span>
+                </div>
+            </div>
+            
+            <div class="interpretation" id="bmi-interpretation"></div>
+        </div>
+    </div>
+
+    <script>
+        // Get previous values if available
+        window.addEventListener('DOMContentLoaded', function() {
+            const height = "{{ user_data.Height|default('') }}";
+            const weight = "{{ user_data.Weight|default('') }}";
+            
+            if (height && weight && parseFloat(height) > 0 && parseFloat(weight) > 0) {
+                calculateBMI();
+            }
+        });
+        
+        function calculateBMI() {
+            const height = parseFloat(document.getElementById('height').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            
+            if (isNaN(height) || isNaN(weight) || height <= 0 || weight <= 0) {
+                alert("Please enter valid height and weight values");
+                return;
+            }
+            
+            const heightInMeters = height / 100;
+            const bmi = weight / (heightInMeters * heightInMeters);
+            const roundedBmi = Math.round(bmi * 10) / 10;
+            
+            document.getElementById('bmi-value').textContent = roundedBmi.toFixed(1);
+            
+            let category, interpretation, markerPosition, markerColor;
+            
+            if (bmi < 18.5) {
+                category = "Underweight";
+                interpretation = "Your BMI suggests you are underweight. You might need to gain some weight. It's advisable to consult with a healthcare professional.";
+                markerPosition = "12.5%";
+                markerColor = "#17a2b8";
+            } else if (bmi >= 18.5 && bmi < 25) {
+                category = "Normal weight";
+                interpretation = "Your BMI is within the normal weight range. Maintain your healthy weight with balanced diet and regular physical activity.";
+                markerPosition = "37.5%";
+                markerColor = "#28a745";
+            } else if (bmi >= 25 && bmi < 30) {
+                category = "Overweight";
+                interpretation = "Your BMI suggests you are overweight. Consider adopting a healthier lifestyle with proper diet and exercise.";
+                markerPosition = "62.5%";
+                markerColor = "#ffc107";
+            } else {
+                category = "Obesity";
+                interpretation = "Your BMI indicates obesity. It's recommended to consult with a healthcare professional for guidance on weight management.";
+                markerPosition = "87.5%";
+                markerColor = "#dc3545";
+            }
+            
+            document.getElementById('bmi-category').textContent = category;
+            document.getElementById('bmi-interpretation').textContent = interpretation;
+            document.getElementById('bmi-marker').style.left = markerPosition;
+            document.getElementById('bmi-marker').style.borderBottomColor = markerColor;
+            
+            document.getElementById('result-container').style.display = "block";
+            
+            // Send data to server
+            sendBMIData(height, weight);
+        }
+        
+        function sendBMIData(height, weight) {
+            fetch('/bmi', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    height: height,
+                    weight: weight
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Server error:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Fitness Tracking System</title>
+    <title>Sign Up - Fitness Tracking System</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -22,14 +22,14 @@
         }
 
         /* Split Screen Layout */
-        .login-wrapper {
+        .signup-wrapper {
             display: flex;
             width: 100%;
             min-height: 100vh;
         }
 
         /* Left Side - Graphic/Motivational Text */
-        .login-left {
+        .signup-left {
             flex: 1;
             background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), transparent);
             display: flex;
@@ -41,7 +41,7 @@
             overflow: hidden;
         }
 
-        .login-left::before {
+        .signup-left::before {
             content: '';
             position: absolute;
             top: 0;
@@ -53,7 +53,7 @@
             z-index: 0;
         }
 
-        .login-left h1 {
+        .signup-left h1 {
             font-size: 48px;
             font-weight: 700;
             color: #00d4ff;
@@ -63,7 +63,7 @@
             z-index: 1;
         }
 
-        .login-left p {
+        .signup-left p {
             font-size: 20px;
             font-weight: 400;
             color: #b0b0b0;
@@ -73,8 +73,8 @@
             z-index: 1;
         }
 
-        /* Right Side - Login Form */
-        .login-right {
+        /* Right Side - Signup Form */
+        .signup-right {
             flex: 1;
             display: flex;
             justify-content: center;
@@ -82,7 +82,7 @@
             padding: 40px;
         }
 
-        .login-container {
+        .signup-container {
             background: #2a2a2a;
             padding: 50px;
             border-radius: 20px;
@@ -102,17 +102,17 @@
         }
 
         /* Form Styling */
-        .login-form {
+        .signup-form {
             display: flex;
             flex-direction: column;
-            gap: 30px;
+            gap: 20px;
         }
 
         .input-group {
             position: relative;
         }
 
-        .input-group input {
+        .input-group input, .input-group select {
             width: 100%;
             padding: 12px 0;
             border: none;
@@ -124,7 +124,16 @@
             transition: border-bottom-color 0.3s ease;
         }
 
-        .input-group input:focus {
+        .input-group select {
+            cursor: pointer;
+        }
+
+        .input-group select option {
+            background: #2a2a2a;
+            color: #e0e0e0;
+        }
+
+        .input-group input:focus, .input-group select:focus {
             border-bottom-color: #00d4ff;
         }
 
@@ -139,14 +148,23 @@
         }
 
         .input-group input:focus + label,
-        .input-group input:not(:placeholder-shown) + label {
+        .input-group input:not(:placeholder-shown) + label,
+        .input-group select:focus + label,
+        .input-group select:not(:placeholder-shown) + label {
             top: -20px;
             font-size: 14px;
             color: #00d4ff;
         }
 
-        /* Login Button */
-        .login-btn {
+        /* Form Grid for side-by-side inputs */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Signup Button */
+        .signup-btn {
             padding: 14px;
             background: transparent;
             border: 2px solid #00d4ff;
@@ -159,9 +177,10 @@
             position: relative;
             overflow: hidden;
             z-index: 1;
+            margin-top: 20px;
         }
 
-        .login-btn::before {
+        .signup-btn::before {
             content: '';
             position: absolute;
             top: 0;
@@ -175,13 +194,29 @@
             transition: transform 0.3s ease;
         }
 
-        .login-btn:hover::before {
+        .signup-btn:hover::before {
             transform: scaleX(1);
         }
 
-        .login-btn:hover {
+        .signup-btn:hover {
             color: #1a1a1a;
             box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+        }
+
+        .login-link {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #b0b0b0;
+        }
+
+        .login-link a {
+            color: #00d4ff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .login-link a:hover {
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.7);
         }
 
         /* Error Message */
@@ -191,22 +226,13 @@
             margin-top: 15px;
             display: none;
         }
-        
-        /* Signup Link */
-        .signup-link {
-            margin-top: 20px;
+
+        /* Success Message */
+        #success-message {
+            color: #55ff7f;
             font-size: 16px;
-            color: #b0b0b0;
-        }
-
-        .signup-link a {
-            color: #00d4ff;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .signup-link a:hover {
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.7);
+            margin-top: 15px;
+            display: none;
         }
 
         /* Animations */
@@ -223,49 +249,49 @@
 
         /* Responsive Design */
         @media (max-width: 1024px) {
-            .login-wrapper {
+            .signup-wrapper {
                 flex-direction: column;
             }
 
-            .login-left, .login-right {
+            .signup-left, .signup-right {
                 flex: none;
                 width: 100%;
                 padding: 20px;
             }
 
-            .login-left {
+            .signup-left {
                 min-height: 40vh;
             }
 
-            .login-right {
+            .signup-right {
                 min-height: 60vh;
             }
 
-            .login-left h1 {
+            .signup-left h1 {
                 font-size: 36px;
             }
 
-            .login-left p {
+            .signup-left p {
                 font-size: 18px;
                 max-width: 90%;
             }
 
-            .login-container {
+            .signup-container {
                 padding: 40px;
                 max-width: 450px;
             }
         }
 
         @media (max-width: 480px) {
-            .login-left h1 {
+            .signup-left h1 {
                 font-size: 28px;
             }
 
-            .login-left p {
+            .signup-left p {
                 font-size: 16px;
             }
 
-            .login-container {
+            .signup-container {
                 padding: 30px;
                 max-width: 90%;
             }
@@ -279,26 +305,30 @@
                 font-size: 16px;
             }
 
-            .login-btn {
+            .signup-btn {
                 font-size: 16px;
                 padding: 12px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <div class="login-wrapper">
+    <div class="signup-wrapper">
         <!-- Left Side - Motivational Text -->
-        <div class="login-left">
+        <div class="signup-left">
             <h1>Fitness Tracking System</h1>
-            <p>Take control of your fitness journey with personalized goals, activity tracking, and expert guidance. Log in to start transforming your life today!</p>
+            <p>Join our community of fitness enthusiasts and start tracking your progress. Sign up now to begin your transformation journey!</p>
         </div>
 
-        <!-- Right Side - Login Form -->
-        <div class="login-right">
-            <div class="login-container">
-                <p class="tagline">Your Fitness Journey Starts Here</p>
-                <div class="login-form">
+        <!-- Right Side - Signup Form -->
+        <div class="signup-right">
+            <div class="signup-container">
+                <p class="tagline">Create Your Fitness Account</p>
+                <div class="signup-form">
                     <div class="input-group">
                         <input type="text" id="user_id" placeholder=" " required>
                         <label for="user_id">User ID</label>
@@ -307,10 +337,48 @@
                         <input type="password" id="password" placeholder=" " required>
                         <label for="password">Password</label>
                     </div>
-                    <button class="login-btn" onclick="login()">Login</button>
+                    <div class="input-group">
+                        <input type="password" id="confirm_password" placeholder=" " required>
+                        <label for="confirm_password">Confirm Password</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="name" placeholder=" " required>
+                        <label for="name">Full Name</label>
+                    </div>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <input type="number" id="age" placeholder=" " required>
+                            <label for="age">Age</label>
+                        </div>
+                        <div class="input-group">
+                            <select id="gender" required>
+                                <option value="" disabled selected></option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <label for="gender">Gender</label>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <input type="number" step="0.01" id="height" placeholder=" " required>
+                            <label for="height">Height (cm)</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="number" step="0.01" id="weight" placeholder=" " required>
+                            <label for="weight">Weight (kg)</label>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="tel" id="phone_number" placeholder=" " required>
+                        <label for="phone_number">Phone Number</label>
+                    </div>
+                    <button class="signup-btn" onclick="signup()">Create Account</button>
                     <div id="error-message"></div>
-                    <div class="signup-link">
-                        Don't have an account? <a href="/signup">Sign up here</a>
+                    <div id="success-message"></div>
+                    <div class="login-link">
+                        Already have an account? <a href="/login">Login here</a>
                     </div>
                 </div>
             </div>
@@ -318,25 +386,64 @@
     </div>
 
     <script>
-        async function login() {
+        async function signup() {
             const user_id = document.getElementById('user_id').value;
             const password = document.getElementById('password').value;
+            const confirm_password = document.getElementById('confirm_password').value;
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+            const height = document.getElementById('height').value;
+            const weight = document.getElementById('weight').value;
+            const phone_number = document.getElementById('phone_number').value;
+            
             const errorMessage = document.getElementById('error-message');
-
+            const successMessage = document.getElementById('success-message');
+            
+            // Reset messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Basic validation
+            if (!user_id || !password || !confirm_password || !name || !age || !gender || !height || !weight || !phone_number) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Please fill in all fields';
+                return;
+            }
+            
+            if (password !== confirm_password) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Passwords do not match';
+                return;
+            }
+            
             try {
-                const response = await fetch('/login', {
+                const response = await fetch('/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id, password })
+                    body: JSON.stringify({ 
+                        user_id, 
+                        password,
+                        name,
+                        age: parseInt(age),
+                        gender,
+                        height: parseFloat(height),
+                        weight: parseFloat(weight),
+                        phone_number
+                    })
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
-                    window.location.href = '/dashboard';
+                    successMessage.style.display = 'block';
+                    successMessage.textContent = data.message || 'Account created successfully! Redirecting to login...';
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
                 } else {
                     errorMessage.style.display = 'block';
-                    errorMessage.textContent = data.error || 'Login failed';
+                    errorMessage.textContent = data.error || 'Registration failed';
                 }
             } catch (error) {
                 errorMessage.style.display = 'block';
@@ -344,10 +451,10 @@
             }
         }
 
-        // Allow login on Enter key
+        // Allow signup on Enter key
         document.addEventListener('keypress', (event) => {
             if (event.key === 'Enter') {
-                login();
+                signup();
             }
         });
     </script>
