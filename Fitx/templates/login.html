@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Fitness Tracking System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Split Screen Layout */
+        .login-wrapper {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* Left Side - Graphic/Motivational Text */
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), transparent);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
+            opacity: 0.2;
+            z-index: 0;
+        }
+
+        .login-left h1 {
+            font-size: 48px;
+            font-weight: 700;
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            margin-bottom: 20px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .login-left p {
+            font-size: 20px;
+            font-weight: 400;
+            color: #b0b0b0;
+            text-align: center;
+            max-width: 500px;
+            line-height: 1.6;
+            z-index: 1;
+        }
+
+        /* Right Side - Login Form */
+        .login-right {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .login-container {
+            background: #2a2a2a;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            animation: fadeIn 1s ease;
+        }
+
+        .tagline {
+            color: #e0e0e0;
+            font-size: 22px;
+            font-weight: 500;
+            margin-bottom: 30px;
+            text-shadow: 0 0 5px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Form Styling */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 0;
+            border: none;
+            border-bottom: 2px solid #3a3a3a;
+            background: transparent;
+            font-size: 18px;
+            color: #e0e0e0;
+            outline: none;
+            transition: border-bottom-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-bottom-color: #00d4ff;
+        }
+
+        .input-group label {
+            position: absolute;
+            top: 12px;
+            left: 0;
+            color: #b0b0b0;
+            font-size: 18px;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus + label,
+        .input-group input:not(:placeholder-shown) + label {
+            top: -20px;
+            font-size: 14px;
+            color: #00d4ff;
+        }
+
+        /* Login Button */
+        .login-btn {
+            padding: 14px;
+            background: transparent;
+            border: 2px solid #00d4ff;
+            border-radius: 30px;
+            color: #00d4ff;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #00d4ff;
+            z-index: -1;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .login-btn:hover::before {
+            transform: scaleX(1);
+        }
+
+        .login-btn:hover {
+            color: #1a1a1a;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+        }
+
+        /* Error Message */
+        #error-message {
+            color: #ff5555;
+            font-size: 16px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        /* Signup Link */
+        .signup-link {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #b0b0b0;
+        }
+
+        .signup-link a {
+            color: #00d4ff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .signup-link a:hover {
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.7);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .login-wrapper {
+                flex-direction: column;
+            }
+
+            .login-left, .login-right {
+                flex: none;
+                width: 100%;
+                padding: 20px;
+            }
+
+            .login-left {
+                min-height: 40vh;
+            }
+
+            .login-right {
+                min-height: 60vh;
+            }
+
+            .login-left h1 {
+                font-size: 36px;
+            }
+
+            .login-left p {
+                font-size: 18px;
+                max-width: 90%;
+            }
+
+            .login-container {
+                padding: 40px;
+                max-width: 450px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-left h1 {
+                font-size: 28px;
+            }
+
+            .login-left p {
+                font-size: 16px;
+            }
+
+            .login-container {
+                padding: 30px;
+                max-width: 90%;
+            }
+
+            .tagline {
+                font-size: 18px;
+            }
+
+            .input-group input,
+            .input-group label {
+                font-size: 16px;
+            }
+
+            .login-btn {
+                font-size: 16px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <!-- Left Side - Motivational Text -->
+        <div class="login-left">
+            <h1>Fitness Tracking System</h1>
+            <p>Take control of your fitness journey with personalized goals, activity tracking, and expert guidance. Log in to start transforming your life today!</p>
+        </div>
+
+        <!-- Right Side - Login Form -->
+        <div class="login-right">
+            <div class="login-container">
+                <p class="tagline">Your Fitness Journey Starts Here</p>
+                <div class="login-form">
+                    <div class="input-group">
+                        <input type="text" id="user_id" placeholder=" " required>
+                        <label for="user_id">User ID</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="password" placeholder=" " required>
+                        <label for="password">Password</label>
+                    </div>
+                    <button class="login-btn" onclick="login()">Login</button>
+                    <div id="error-message"></div>
+                    <div class="signup-link">
+                        Don't have an account? <a href="/signup">Sign up here</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function login() {
+            const user_id = document.getElementById('user_id').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('error-message');
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    window.location.href = '/dashboard';
+                } else {
+                    errorMessage.style.display = 'block';
+                    errorMessage.textContent = data.error || 'Login failed';
+                }
+            } catch (error) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'An error occurred. Please try again.';
+            }
+        }
+
+        // Allow login on Enter key
+        document.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                login();
+            }
+        });
+    </script>
+</body>
+</html>

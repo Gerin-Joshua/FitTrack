@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goal - Fitness Tracking System</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Fitness Tracking System</h1>
+        <a href="/login" class="logout">Logout</a>
+    </header>
+    <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/activity">Activity</a>
+        <a href="/goal">Goal</a>
+        <a href="/diet">Diet</a>
+        <a href="/bmi">BMI Calculator</a>
+        <a href="/friend">Friend</a>
+        <a href="/trainer">Trainer</a>
+        <a href="/workout">Workout</a>
+        <a href="/exercise">Exercise</a>
+        <a href="/badge">Badge</a>
+    </nav>
+    <div class="card">
+        <h2>Set a Goal</h2>
+        <div class="form-group">
+            <label for="goal_type">Goal Type</label>
+            <input type="text" id="goal_type" placeholder="Enter goal type" required>
+        </div>
+        <div class="form-group">
+            <label for="exer_hours">Exercise Hours</label>
+            <input type="number" id="exer_hours" placeholder="Enter exercise hours" required>
+        </div>
+        <div class="form-group">
+            <label for="target_weight">Target Weight (kg)</label>
+            <input type="number" id="target_weight" placeholder="Enter target weight" required>
+        </div>
+        <button onclick="submitGoal()">Set Goal</button>
+        <div class="message" id="message"></div>
+    </div>
+
+    <script src="/static/js/goal.js"></script>
+</body>
+</html>
